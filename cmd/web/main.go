@@ -1,7 +1,9 @@
 package main
 
 import (
+	"Snippetbox/internal/storage/sqlite"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -30,7 +32,14 @@ func main() {
 		Handler:  app.routes(),
 	}
 
+	storage, err := sqlite.New("./storage/storage.db")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	_ = storage
+
 	infoLog.Printf("Stating server on http://localhost%s/", *addr)
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	errorLog.Fatal(err)
 }
