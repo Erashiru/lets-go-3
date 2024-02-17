@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -11,9 +12,10 @@ import (
 )
 
 type application struct {
-	errorLog *log.Logger
-	infoLog  *log.Logger
-	snippets *sqlite.Storage
+	errorLog      *log.Logger
+	infoLog       *log.Logger
+	snippets      *sqlite.Storage
+	templateCache map[string]*template.Template
 }
 
 func main() {
@@ -31,10 +33,16 @@ func main() {
 
 	defer db.Close()
 
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		errorLog.Fatal(err)
+	}
+
 	app := &application{
-		errorLog: errorLog,
-		infoLog:  infoLog,
-		snippets: &sqlite.Storage{DB: db},
+		errorLog:      errorLog,
+		infoLog:       infoLog,
+		snippets:      &sqlite.Storage{DB: db},
+		templateCache: templateCache,
 	}
 
 	srv := &http.Server{
@@ -42,18 +50,6 @@ func main() {
 		ErrorLog: errorLog,
 		Handler:  app.routes(),
 	}
-
-	// storage, err := sqlite.New("./storage/storage.db")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// expires := time.Now().AddDate(0, 0, 7)
-	// id, err := storage.InsertSnippets("adil", "lox", expires)
-	// if err != nil {
-	// 	errorLog.Fatal(err)
-	// }
-
-	// fmt.Println(id)
 
 	infoLog.Printf("Stating server on http://localhost%s/", *addr)
 	err = srv.ListenAndServe()
