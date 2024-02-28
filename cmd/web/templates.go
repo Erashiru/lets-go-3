@@ -13,6 +13,7 @@ type templateData struct {
 	Snippet     *sqlite.Snippet
 	Snippets    []*sqlite.Snippet
 	Form        any
+	Flash       string
 }
 
 func humanDate(t time.Time) string {

@@ -37,28 +37,6 @@ func (m *Storage) Insert(title string, content string, expires int) (int, error)
 	}
 
 	return int(id), err
-
-	// stmt, err := s.db.Prepare(`
-	// 	INSERT INTO snippets (title, content, created, expires) VALUES (?, ?, ?, ?)
-	// `)
-	// if err != nil {
-	// 	return 0, err
-	// }
-	// defer stmt.Close()
-
-	// created := time.Now() // Get the current time for the "created" column
-
-	// result, err := stmt.Exec(title, content, created, expires)
-	// if err != nil {
-	// 	return 0, err
-	// }
-
-	// id, err := result.LastInsertId()
-	// if err != nil {
-	// 	return 0, err
-	// }
-
-	// return int(id), nil
 }
 
 func (m *Storage) Get(id int) (*Snippet, error) {
